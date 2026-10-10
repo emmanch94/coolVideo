@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getStyle } from "@/lib/styles";
 import { PENDING_STATUSES, type Generation, type Project } from "@/lib/types";
+import { BlurFade } from "./ui/blur-fade";
+import { NumberTicker } from "./ui/number-ticker";
 import { MediaCard } from "./media-card";
 
 const POLL_MS = 5000;
@@ -58,7 +60,10 @@ export function ProjectView({
 
   return (
     <>
-      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground">
+      <Link
+        href="/dashboard"
+        className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground"
+      >
         <ArrowLeft className="size-4" /> Proyectos
       </Link>
 
@@ -90,7 +95,7 @@ export function ProjectView({
         </div>
         <div className="flex shrink-0 items-center gap-3">
           <div className="glass rounded-xl px-4 py-2 text-sm">
-            <span className="font-mono">{done}</span>
+            <NumberTicker value={done} className="font-mono text-sm" />
             <span className="text-muted">/{generations.length} listos</span>
           </div>
           <button
@@ -114,22 +119,28 @@ export function ProjectView({
       )}
 
       <div className="mt-10 space-y-12">
-        {styleIds.map((styleId) => {
+        {styleIds.map((styleId, si) => {
           const style = getStyle(styleId);
           const items = generations.filter((g) => g.style === styleId);
           return (
-            <section key={styleId}>
-              <div className="flex items-center gap-3">
-                <span className={`size-3 rounded-full bg-gradient-to-br ${style?.gradient ?? "from-white to-white"}`} />
-                <h2 className="whitespace-nowrap text-lg font-semibold">{style?.name ?? styleId}</h2>
-                <span className="hidden text-sm text-muted sm:inline">{style?.tagline}</span>
-              </div>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                {items.map((g) => (
-                  <MediaCard key={g.id} generation={g} aspectRatio={project.aspect_ratio} />
-                ))}
-              </div>
-            </section>
+            <BlurFade key={styleId} delay={si * 0.08}>
+              <section>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`size-3 rounded-full bg-gradient-to-br ${style?.gradient ?? "from-white to-white"}`}
+                  />
+                  <h2 className="whitespace-nowrap text-lg font-semibold">
+                    {style?.name ?? styleId}
+                  </h2>
+                  <span className="hidden text-sm text-muted sm:inline">{style?.tagline}</span>
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  {items.map((g) => (
+                    <MediaCard key={g.id} generation={g} aspectRatio={project.aspect_ratio} />
+                  ))}
+                </div>
+              </section>
+            </BlurFade>
           );
         })}
       </div>

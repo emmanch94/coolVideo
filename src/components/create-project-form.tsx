@@ -1,11 +1,14 @@
 "use client";
 
-import { clsx } from "clsx";
 import { Check, Film, Image as ImageIcon, Link2, Loader2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { BorderBeam } from "@/components/ui/border-beam";
+import { MagicCard } from "@/components/ui/magic-card";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { STYLES } from "@/lib/styles";
 import type { AspectRatio } from "@/lib/types";
+import { cn as clsx } from "@/lib/utils";
 
 const MAX_STYLES = 4;
 
@@ -56,7 +59,10 @@ export function CreateProjectForm() {
   const disabled = loading || !url.trim() || styles.length === 0;
 
   return (
-    <form onSubmit={onSubmit} className="glass rounded-3xl p-4 sm:p-6">
+    <form
+      onSubmit={onSubmit}
+      className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/80 p-4 shadow-2xl shadow-black/40 backdrop-blur sm:p-6"
+    >
       <label htmlFor="url" className="text-sm font-medium">
         URL de tu app o producto
       </label>
@@ -74,14 +80,17 @@ export function CreateProjectForm() {
             className="h-12 w-full bg-transparent text-sm outline-none placeholder:text-muted/60"
           />
         </div>
-        <button
+        <ShimmerButton
           type="submit"
           disabled={disabled}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-400 px-6 text-sm font-medium shadow-lg shadow-fuchsia-500/20 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          borderRadius="12px"
+          shimmerColor="#fbcfe8"
+          background="linear-gradient(110deg, #6d28d9 0%, #c026d3 55%, #ea580c 100%)"
+          className="h-12 gap-2 px-6 text-sm font-medium shadow-lg shadow-fuchsia-600/25 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
           {loading ? "Analizando…" : "Generar"}
-        </button>
+        </ShimmerButton>
       </div>
 
       <div className="mt-6 flex items-baseline justify-between">
@@ -95,32 +104,36 @@ export function CreateProjectForm() {
           const active = styles.includes(s.id);
           const full = !active && styles.length >= MAX_STYLES;
           return (
-            <button
+            <MagicCard
               key={s.id}
-              type="button"
-              onClick={() => toggleStyle(s.id)}
-              disabled={full}
-              aria-pressed={active}
+              gradientColor="#2a1838"
+              gradientSize={160}
               className={clsx(
-                "group relative overflow-hidden rounded-xl border p-3 text-left transition",
-                active
-                  ? "border-fuchsia-400/70 bg-white/[0.06]"
-                  : "border-white/10 hover:border-white/25",
-                full && "cursor-not-allowed opacity-40",
+                "rounded-xl transition",
+                active && "ring-2 ring-fuchsia-500/70",
+                full && "opacity-40",
               )}
             >
-              <div className={`mb-3 h-10 rounded-lg bg-gradient-to-br ${s.gradient}`} />
-              <p className="text-sm font-medium">
-                <span className="mr-1.5">{s.emoji}</span>
-                {s.name}
-              </p>
-              <p className="mt-0.5 line-clamp-1 text-xs text-muted">{s.tagline}</p>
-              {active && (
-                <span className="absolute top-2 right-2 grid size-5 place-items-center rounded-full bg-fuchsia-500">
-                  <Check className="size-3" />
-                </span>
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => toggleStyle(s.id)}
+                disabled={full}
+                aria-pressed={active}
+                className="relative block w-full p-3 text-left disabled:cursor-not-allowed"
+              >
+                <div className={`mb-3 h-10 rounded-lg bg-gradient-to-br ${s.gradient}`} />
+                <p className="text-sm font-medium">
+                  <span className="mr-1.5">{s.emoji}</span>
+                  {s.name}
+                </p>
+                <p className="mt-0.5 line-clamp-1 text-xs text-muted">{s.tagline}</p>
+                {active && (
+                  <span className="absolute top-2 right-2 grid size-5 place-items-center rounded-full bg-fuchsia-500">
+                    <Check className="size-3" />
+                  </span>
+                )}
+              </button>
+            </MagicCard>
           );
         })}
       </div>
@@ -136,7 +149,9 @@ export function CreateProjectForm() {
                 onClick={() => setAspectRatio(r.value)}
                 className={clsx(
                   "flex items-center gap-2 rounded-lg px-3 py-2 text-xs transition",
-                  aspectRatio === r.value ? "bg-white/10 text-foreground" : "text-muted hover:text-foreground",
+                  aspectRatio === r.value
+                    ? "bg-white/10 text-foreground"
+                    : "text-muted hover:text-foreground",
                 )}
               >
                 <span className={`${r.box} rounded-[3px] border border-current`} />
@@ -173,8 +188,13 @@ export function CreateProjectForm() {
         </div>
       </div>
 
+      <BorderBeam size={160} duration={9} colorFrom="#f472b6" colorTo="#a78bfa" />
+
       {error && (
-        <p role="alert" className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <p
+          role="alert"
+          className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+        >
           {error}
         </p>
       )}

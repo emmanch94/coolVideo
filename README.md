@@ -4,7 +4,7 @@ Pega una URL y genera imágenes y videos promocionales en distintos estilos (Mot
 Vox, 3D isométrico, cinemático, retro VHS, anime, minimal suizo, claymation) usando la API de
 [Higgsfield](https://higgsfield.ai).
 
-**Stack:** Next.js 15 (App Router) · Tailwind CSS v4 · Clerk (auth) · Supabase (Postgres) · Higgsfield API
+**Stack:** Next.js 15 (App Router) · Tailwind CSS v4 · [Magic UI](https://magicui.design) · Clerk (auth) · Supabase (Postgres) · Higgsfield API
 
 ## Cómo funciona
 
@@ -25,6 +25,7 @@ src/
     projects/[id]/page.tsx    resultados en vivo
     api/projects/...          crear / listar / consultar / borrar
     sign-in, sign-up          páginas de Clerk
+  components/ui/              componentes de Magic UI
   lib/
     higgsfield.ts             cliente REST de Higgsfield (+ modo mock)
     scrape.ts                 lectura de la URL con protección SSRF
@@ -34,6 +35,23 @@ src/
   middleware.ts               protege /dashboard, /projects y /api/projects con Clerk
 supabase/migrations/0001_init.sql
 ```
+
+## Interfaz (Magic UI)
+
+Los componentes de [Magic UI](https://github.com/magicuidesign/magicui) (licencia MIT) viven en
+`src/components/ui/`, siguiendo el modelo de shadcn: el código se copia al proyecto y es tuyo.
+Sus animaciones (`@keyframes`) están en `src/app/globals.css`.
+
+Se usan: MagicCard, BorderBeam, ShimmerButton, BlurFade, Marquee, AnimatedShinyText, ShineBorder,
+WordRotate, NumberTicker, AuroraText, DotPattern y Particles.
+
+Para añadir más componentes:
+
+```bash
+npx shadcn@latest add @magicui/<componente>   # p. ej. @magicui/animated-beam
+```
+
+Si el CSS del componente incluye keyframes, la CLI los añade a `globals.css`.
 
 ## Puesta en marcha
 

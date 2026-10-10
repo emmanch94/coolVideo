@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
+import { PageBackground } from "@/components/page-background";
 import { ProjectView } from "@/components/project-view";
 import { SiteHeader } from "@/components/site-header";
 import { getProject, syncGenerations } from "@/lib/projects";
@@ -15,7 +16,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="relative min-h-dvh">
-      <div className="bg-grid pointer-events-none absolute inset-x-0 top-0 h-[600px]" />
+      <PageBackground />
       <SiteHeader />
       <main className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <ProjectView initialProject={project} initialGenerations={generations} />

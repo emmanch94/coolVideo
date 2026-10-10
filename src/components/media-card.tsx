@@ -1,6 +1,14 @@
-import { clsx } from "clsx";
 import { AlertTriangle, Download, Film, Image as ImageIcon, Loader2 } from "lucide-react";
-import type { AspectRatio, Generation, GenerationStatus } from "@/lib/types";
+import {
+  PENDING_STATUSES,
+  type AspectRatio,
+  type Generation,
+  type GenerationStatus,
+} from "@/lib/types";
+import { cn as clsx } from "@/lib/utils";
+import { AnimatedShinyText } from "./ui/animated-shiny-text";
+import { BlurFade } from "./ui/blur-fade";
+import { ShineBorder } from "./ui/shine-border";
 
 const STATUS_LABEL: Record<GenerationStatus, string> = {
   waiting: "Esperando imagen",
@@ -17,28 +25,48 @@ const ASPECT: Record<AspectRatio, string> = {
   "1:1": "aspect-square",
 };
 
-export function MediaCard({ generation: g, aspectRatio }: { generation: Generation; aspectRatio: AspectRatio }) {
+export function MediaCard({
+  generation: g,
+  aspectRatio,
+}: {
+  generation: Generation;
+  aspectRatio: AspectRatio;
+}) {
   const isVideo = g.kind === "video";
   const Icon = isVideo ? Film : ImageIcon;
+  const pending = PENDING_STATUSES.includes(g.status);
 
   return (
-    <figure className="glass overflow-hidden rounded-2xl">
+    <figure className="glass relative overflow-hidden rounded-2xl">
+      {pending && (
+        <ShineBorder
+          borderWidth={1.5}
+          duration={10}
+          shineColor={["#a78bfa", "#f472b6", "#fb923c"]}
+        />
+      )}
       <div className={clsx("relative w-full overflow-hidden bg-black/40", ASPECT[aspectRatio])}>
         {g.status === "completed" && g.result_url ? (
-          isVideo ? (
-            <video
-              src={g.result_url}
-              className="size-full object-cover"
-              controls
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={g.result_url} alt={`Imagen ${g.style}`} className="size-full object-cover" />
-          )
+          <BlurFade key={g.result_url} className="size-full" duration={0.6} blur="12px">
+            {isVideo ? (
+              <video
+                src={g.result_url}
+                className="size-full object-cover"
+                controls
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={g.result_url}
+                alt={`Imagen ${g.style}`}
+                className="size-full object-cover"
+              />
+            )}
+          </BlurFade>
         ) : g.status === "failed" ? (
           <div className="flex size-full flex-col items-center justify-center gap-2 p-6 text-center">
             <AlertTriangle className="size-6 text-red-400" />
@@ -47,7 +75,7 @@ export function MediaCard({ generation: g, aspectRatio }: { generation: Generati
         ) : (
           <div className="skeleton flex size-full flex-col items-center justify-center gap-3">
             <Loader2 className="size-6 animate-spin text-fuchsia-300" />
-            <p className="text-sm text-muted">{STATUS_LABEL[g.status]}…</p>
+            <AnimatedShinyText className="text-sm">{STATUS_LABEL[g.status]}…</AnimatedShinyText>
           </div>
         )}
       </div>
